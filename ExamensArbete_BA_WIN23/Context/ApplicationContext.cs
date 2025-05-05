@@ -1,4 +1,4 @@
-﻿using ExamensArbete_BA_WIN23.Business.Dtos;
+﻿using ExamensArbete_BA_WIN23.Business.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExamensArbete_BA_WIN23.Context;
@@ -10,13 +10,10 @@ public class ApplicationContext : DbContext
     {
 
     }
-    public DbSet<ChangeRequestDto> ChangeRequest { get; set; }
+    public DbSet<ChangeRequest> ChangeRequest { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
-
-        optionsBuilder.EnableSensitiveDataLogging();
-        optionsBuilder.LogTo(Console.WriteLine, minimumLevel: LogLevel.Debug);
     }
 }

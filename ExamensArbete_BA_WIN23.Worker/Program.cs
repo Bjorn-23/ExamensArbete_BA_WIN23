@@ -13,22 +13,18 @@ builder.Services.AddDbContext<ApplicationContext>(x =>
 {
     x.UseSqlServer(builder.Configuration.GetConnectionString("Sql"));
 });
-
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
 builder.Services.AddScoped<DateTimeProvider>();
 builder.Services.AddScoped<ChangeRequestRepo>();
 builder.Services.AddScoped<ChangeRequestService>();
 builder.Services.AddScoped<DbSeed>();
 
-var host = builder.Build();
-
-using (var scope = host.Services.CreateScope())
+builder.Logging.AddSimpleConsole(options =>
 {
-    var services = scope.ServiceProvider;
+    options.SingleLine = true;
+    options.TimestampFormat = null;
+    options.IncludeScopes = false;
+});
 
-    var seeder = services.GetRequiredService<DbSeed>();
-    await seeder.SeedAsync();
-}
-
+var host = builder.Build();
 host.Run();

@@ -1,28 +1,37 @@
-﻿using ExamensArbete_BA_WIN23.Utilities;
-using ExamensArbete_BA_WIN23.Business.Dtos;
-using ExamensArbete_BA_WIN23.Repositories;
-using Microsoft.EntityFrameworkCore;
+﻿using ExamensArbete_BA_WIN23.Business.Entities;
 using ExamensArbete_BA_WIN23.Persistence;
+using ExamensArbete_BA_WIN23.Repositories;
+using ExamensArbete_BA_WIN23.Utilities;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExamensArbete_BA_WIN23.Services;
 
 public class ChangeRequestService
 {
-    private readonly DateTimeProvider _dateTimeProvider;
-    private readonly ChangeRequestRepo _changeRequestRepo;
+    private readonly ILogger<ChangeRequestService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ChangeRequestRepo _changeRequestRepo;
+    private readonly DateTimeProvider _dateTimeProvider;
 
     public ChangeRequestService(
-        DateTimeProvider dateTimeProvider,
+        ILogger<ChangeRequestService> logger,
+        IUnitOfWork unitOfWork,
         ChangeRequestRepo changeRequestRepo,
-        IUnitOfWork unitOfWork)
+        DateTimeProvider dateTimeProvider
+        )
     {
         _dateTimeProvider = dateTimeProvider;
         _changeRequestRepo = changeRequestRepo;
         _unitOfWork = unitOfWork;
+        _logger = logger;
+    }
+    public async Task<IEnumerable<ChangeRequest>> GetAllAsync(CancellationToken ct)
+    {
+        var result = await _changeRequestRepo.Query().ToListAsync(ct);
+        return result;
     }
 
-    public async Task<IEnumerable<ChangeRequestDto>> GetExpiredChangeRequest(TimeSpan expirationTreshold, CancellationToken ct)
+    public async Task<IEnumerable<ChangeRequest>> GetExpiredChangeRequest(TimeSpan expirationTreshold, CancellationToken ct)
     {
         var expirationDate = _dateTimeProvider.UtcNow.Add(expirationTreshold);
         var result = await _changeRequestRepo.Query()
@@ -33,27 +42,23 @@ public class ChangeRequestService
         return result;
     }
 
-    public async Task DeleteChangeRequest(ChangeRequestDto dto, CancellationToken ct)
+    public async Task DeleteChangeRequest(IEnumerable<ChangeRequest> changeRequests, CancellationToken ct)
     {
-        var exists = await _changeRequestRepo.Exists(x => x.Id == dto.Id, ct);
-        if (exists == false)
+        foreach (var changeRequest in changeRequests)
         {
-            return;
+            _changeRequestRepo.Delete(changeRequest);
+            _logger.LogInformation("Queued ChangeRequestID: {ChangeRequestID} for deletion", changeRequest.ChangeRequestId);
         }
 
-        _changeRequestRepo.Delete(dto);
-        await _unitOfWork.SaveChangesAsync(ct);
-        
+        await _unitOfWork.SaveChangesAsync(ct);        
+        _logger.LogInformation("Succesfully deleted {Count} ChangeRequests", changeRequests.Count());
     }
 
-    public async Task NotifyRequestPendingDeletion(ChangeRequestDto changeRequest, CancellationToken ct)
+    public async Task NotifyRequestPendingDeletion(ChangeRequest changeRequest, CancellationToken ct)
     {
-        throw new NotImplementedException();
-    }
-
-    public async Task ClearData(CancellationToken ct)
-    {        
-        await _changeRequestRepo.ClearAllData(ct: ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        // By using region and customer, get the relevant board members to notify about pending deletion.
+        // Create new notification with: region, customer, IEnumerable<Guid>, NotificationEnum.
+        // await _notificationRepo.SendNotification(changeRequest.Region, changeRequest.Customer, IEnumerable<Guid>, NotificationEnum, ct);
+        _logger.LogInformation("Board members of Customer: {Customer} in Region: {Region}, were sent notifications for ChangeRequestID: {ChangeRequestID}", changeRequest.Customer, changeRequest.Region, changeRequest.ChangeRequestId);
     }
 }

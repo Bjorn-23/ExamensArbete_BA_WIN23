@@ -1,28 +1,37 @@
-﻿
-using ExamensArbete_BA_WIN23.Business.Dtos;
-using ExamensArbete_BA_WIN23.Context;
+﻿using ExamensArbete_BA_WIN23.Business.Entities;
 using ExamensArbete_BA_WIN23.Persistence;
 using ExamensArbete_BA_WIN23.Repositories;
+using ExamensArbete_BA_WIN23.Utilities;
 
 namespace ExamensArbete_BA_WIN23.Worker;
 public class DbSeed
 {
-    private readonly ChangeRequestRepo _changeRequestRepo;
+    private readonly ILogger<DbSeed> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ChangeRequestRepo _changeRequestRepo;
+    private readonly DateTimeProvider _dateTimeProvider;
 
-    public DbSeed(ChangeRequestRepo changeRequestRepo, IUnitOfWork unitOfWork)
+    public DbSeed(
+        ILogger<DbSeed> logger,
+        IUnitOfWork unitOfWork,
+        ChangeRequestRepo changeRequestRepo,
+        DateTimeProvider dateTimeProvider
+        )
     {
-        _changeRequestRepo = changeRequestRepo;
+        _logger = logger;
         _unitOfWork = unitOfWork;
+        _changeRequestRepo = changeRequestRepo;
+        _dateTimeProvider = dateTimeProvider;
     }
 
     public async Task SeedAsync()
     {
         var changeRequests = new[]
         {
-            new ChangeRequestDto()
+            new ChangeRequest()
             {
-                Created = DateTime.Now.AddDays(-120),
+                ChangeRequestId = Guid.Parse("9f72e9ec-2e53-4c87-90be-913e2e6f7a78"),
+                Created = _dateTimeProvider.UtcNow.AddDays(-120),
                 Updated = null,
                 Customer = 1,
                 Region = 1,
@@ -31,8 +40,10 @@ public class DbSeed
                 isSignCompleted = false,
                 DateSentBV = null,
             },
-            new ChangeRequestDto()
+            new ChangeRequest()
             {
+                ChangeRequestId = Guid.Parse("2a1a2f14-157d-4660-9324-5105efc70149"),
+                Created = _dateTimeProvider.UtcNow.AddDays(-120),
                 Customer = 2,
                 Region = 1,
                 FirstApprover = Guid.NewGuid(),
@@ -40,9 +51,10 @@ public class DbSeed
                 isSignCompleted = true,
                 DateSentBV = DateTimeOffset.UtcNow.AddDays(-60),
             },
-            new ChangeRequestDto()
+            new ChangeRequest()
             {
-                Created = DateTime.Now.AddDays(-65),
+                ChangeRequestId = Guid.Parse("f7f36e9c-d15b-46f6-8754-c847a8a2efb3"),
+                Created = _dateTimeProvider.UtcNow.AddDays(-65),
                 Customer = 1,
                 Region = 2,
                 FirstApprover = Guid.NewGuid(),
@@ -50,8 +62,10 @@ public class DbSeed
                 isSignCompleted = false,
                 DateSentBV = null!,
             },
-            new ChangeRequestDto()
+            new ChangeRequest()
             {
+                ChangeRequestId = Guid.Parse("4e703c1c-bc33-4a8f-8bd5-1b99cc1b144e"),
+                Created = _dateTimeProvider.UtcNow.AddMinutes(-15),
                 Customer = 2,
                 Region = 2,
                 FirstApprover = Guid.NewGuid(),
@@ -59,10 +73,17 @@ public class DbSeed
                 isSignCompleted = false,
                 DateSentBV = null!,
             }
-
         };
 
         await _changeRequestRepo.AddRangeAsync(changeRequests);
         await _unitOfWork.SaveChangesAsync();
+        _logger.LogInformation("Seeded database with {Count} entries for demo", changeRequests.Count());
+    }
+
+    public async Task RemoveSeed(CancellationToken ct)
+    {
+        await _changeRequestRepo.ClearAllData(ct: ct);
+        await _unitOfWork.SaveChangesAsync(ct);
+        _logger.LogInformation("Cleared database for demo");
     }
 }

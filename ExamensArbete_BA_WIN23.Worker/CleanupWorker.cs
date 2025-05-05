@@ -26,29 +26,28 @@ public class CleanupWorker : IHostedService
         _logger.LogInformation("{Worker} started", nameof(CleanupWorker));
         var scope = _scopeFactory.CreateScope();
         var changeRequestService = scope.ServiceProvider.GetRequiredService<ChangeRequestService>();
+        var dbSeeder = scope.ServiceProvider.GetRequiredService<DbSeed>();
 
         try
         {
+            // ---ONLY-FOR-DEMO-Purposes----
+            await dbSeeder.RemoveSeed(ct);
+            await dbSeeder.SeedAsync();
+            // -----------------------------
+
             await HandleChangeRequestsToDelete(changeRequestService, ct);
             await HandleChangeRequestsToNotify(changeRequestService, ct);
             _logger.LogInformation("{Worker} finished succesfully", nameof(CleanupWorker));
         }
         catch (Exception ex)
         {
-            _logger.LogInformation(ex, "{Worker} caught exception", nameof(CleanupWorker));
+            _logger.LogError(ex, "{Worker} caught exception", nameof(CleanupWorker));
         }
         finally
         {
-            await ClearData(changeRequestService, ct);
             _applicationLifetime.StopApplication();
         }
     }
-
-    private async Task ClearData(ChangeRequestService changeRequestService, CancellationToken ct)
-    {       
-        await changeRequestService.ClearData(ct);
-    }
-
     public async Task HandleChangeRequestsToDelete(ChangeRequestService changeRequestService , CancellationToken ct)
     {
         var changeRequests = await changeRequestService.GetExpiredChangeRequest(TimeSpan.FromDays(EXPIRATION_DELETE_DAYS), ct);
@@ -57,14 +56,7 @@ public class CleanupWorker : IHostedService
             return;
         }
 
-
-        foreach (var changeRequest in changeRequests)
-        {
-            await changeRequestService.DeleteChangeRequest(changeRequest, ct);
-            _logger.LogInformation("{changeRequest} was deleted", changeRequest.Id);
-        }
-
-        _logger.LogInformation("Deleted {Count} changeRequests", changeRequests.Count());
+        await changeRequestService.DeleteChangeRequest(changeRequests, ct);
     }
 
     public async Task HandleChangeRequestsToNotify(ChangeRequestService changeRequestService, CancellationToken ct)
@@ -75,11 +67,7 @@ public class CleanupWorker : IHostedService
             return;
         }
 
-        foreach (var changeRequest in changeRequests)
-        {
-            await changeRequestService.NotifyRequestPendingDeletion(changeRequest, ct);
-            _logger.LogInformation("Board members of {changeRequest} were sent notifications", changeRequest.Id);
-        }
+        await Task.WhenAll(changeRequests.Select(async changeRequest => changeRequestService.NotifyRequestPendingDeletion(changeRequest, ct)));
     }
 
     public Task StopAsync(CancellationToken ct)
