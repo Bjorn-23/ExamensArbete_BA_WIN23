@@ -1,0 +1,6 @@
+@ExamensArbete_BA_WIN23_HostAddress = http://localhost:5123
+
+GET {{ExamensArbete_BA_WIN23_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

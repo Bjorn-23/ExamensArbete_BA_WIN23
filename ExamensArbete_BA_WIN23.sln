@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35222.181
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExamensArbete_BA_WIN23", "ExamensArbete_BA_WIN23\ExamensArbete_BA_WIN23.csproj", "{70295015-416B-429D-A2C9-9783B2100669}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExamensArbete_BA_WIN23.Worker", "ExamensArbete_BA_WIN23.Worker\ExamensArbete_BA_WIN23.Worker.csproj", "{3A5AAD2E-2E5D-4759-9182-52C8A8801B21}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{70295015-416B-429D-A2C9-9783B2100669}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70295015-416B-429D-A2C9-9783B2100669}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70295015-416B-429D-A2C9-9783B2100669}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70295015-416B-429D-A2C9-9783B2100669}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A5AAD2E-2E5D-4759-9182-52C8A8801B21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A5AAD2E-2E5D-4759-9182-52C8A8801B21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A5AAD2E-2E5D-4759-9182-52C8A8801B21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A5AAD2E-2E5D-4759-9182-52C8A8801B21}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F0A92562-082D-46B9-A31A-52287DC5AF1E}
+	EndGlobalSection
+EndGlobal
