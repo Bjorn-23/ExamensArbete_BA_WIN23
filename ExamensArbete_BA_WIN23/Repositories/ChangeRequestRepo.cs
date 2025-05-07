@@ -3,9 +3,7 @@ using ExamensArbete_BA_WIN23.Context;
 
 namespace ExamensArbete_BA_WIN23.Repositories;
 
-public class ChangeRequestRepo : Repo<ChangeRequest>
+public class ChangeRequestRepo(ApplicationContext context) : Repo<ApplicationContext, ChangeRequest>(context), IChangeRequestRepo
 {
-    public ChangeRequestRepo(ApplicationContext dbContext) : base(dbContext)
-    {
-    }
+    private readonly ApplicationContext _context = context;
 }

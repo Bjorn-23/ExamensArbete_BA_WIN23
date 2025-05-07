@@ -14,9 +14,9 @@ builder.Services.AddDbContext<ApplicationContext>(x =>
     x.UseSqlServer(builder.Configuration.GetConnectionString("Sql"));
 });
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<DateTimeProvider>();
-builder.Services.AddScoped<ChangeRequestRepo>();
-builder.Services.AddScoped<ChangeRequestService>();
+builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+builder.Services.AddScoped<IChangeRequestRepo, ChangeRequestRepo>();
+builder.Services.AddScoped<IChangeRequestService, ChangeRequestService>();
 builder.Services.AddScoped<DbSeed>();
 
 builder.Logging.AddSimpleConsole(options =>

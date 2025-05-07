@@ -12,6 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ExamensArbete_BA_WIN23\ExamensArbete_BA_WIN23.csproj" />
+    <ProjectReference Include="..\ExamensArbete_BA_WIN23\ExamensArbete_BA_WIN23.API.csproj" />
   </ItemGroup>
 </Project>

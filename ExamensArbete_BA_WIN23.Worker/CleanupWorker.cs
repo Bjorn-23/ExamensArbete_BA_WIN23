@@ -4,8 +4,8 @@ namespace ExamensArbete_BA_WIN23.Worker;
 
 public class CleanupWorker : IHostedService
 {
-    public const int EXPIRATION_NOTIFICATION_DAYS = -60;
     public const int EXPIRATION_DELETE_DAYS = -90;
+    public const int EXPIRATION_NOTIFICATION_DAYS = -60;
 
     private readonly ILogger<CleanupWorker> _logger;
     private readonly IHostApplicationLifetime _applicationLifetime;
@@ -25,7 +25,7 @@ public class CleanupWorker : IHostedService
     {
         _logger.LogInformation("{Worker} started", nameof(CleanupWorker));
         var scope = _scopeFactory.CreateScope();
-        var changeRequestService = scope.ServiceProvider.GetRequiredService<ChangeRequestService>();
+        var changeRequestService = scope.ServiceProvider.GetRequiredService<IChangeRequestService>();
         var dbSeeder = scope.ServiceProvider.GetRequiredService<DbSeed>();
 
         try
@@ -48,7 +48,7 @@ public class CleanupWorker : IHostedService
             _applicationLifetime.StopApplication();
         }
     }
-    public async Task HandleChangeRequestsToDelete(ChangeRequestService changeRequestService , CancellationToken ct)
+    public async Task HandleChangeRequestsToDelete(IChangeRequestService changeRequestService , CancellationToken ct)
     {
         var changeRequests = await changeRequestService.GetExpiredChangeRequest(TimeSpan.FromDays(EXPIRATION_DELETE_DAYS), ct);
         if (!changeRequests.Any())
@@ -56,18 +56,18 @@ public class CleanupWorker : IHostedService
             return;
         }
 
-        await changeRequestService.DeleteChangeRequest(changeRequests, ct);
+        await changeRequestService.DeleteExpiredChangeRequests(changeRequests, ct);
     }
 
-    public async Task HandleChangeRequestsToNotify(ChangeRequestService changeRequestService, CancellationToken ct)
+    public async Task HandleChangeRequestsToNotify(IChangeRequestService changeRequestService, CancellationToken ct)
     {
         var changeRequests = await changeRequestService.GetExpiredChangeRequest(TimeSpan.FromDays(EXPIRATION_NOTIFICATION_DAYS), ct);
         if (!changeRequests.Any())
         {
             return;
         }
-
-        await Task.WhenAll(changeRequests.Select(async changeRequest => changeRequestService.NotifyRequestPendingDeletion(changeRequest, ct)));
+        
+        await changeRequestService.NotifyRequestPendingDeletion(changeRequests, ct);
     }
 
     public Task StopAsync(CancellationToken ct)

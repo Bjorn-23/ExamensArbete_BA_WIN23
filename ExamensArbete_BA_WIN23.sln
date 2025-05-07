@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExamensArbete_BA_WIN23", "ExamensArbete_BA_WIN23\ExamensArbete_BA_WIN23.csproj", "{70295015-416B-429D-A2C9-9783B2100669}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExamensArbete_BA_WIN23.API", "ExamensArbete_BA_WIN23\ExamensArbete_BA_WIN23.API.csproj", "{70295015-416B-429D-A2C9-9783B2100669}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExamensArbete_BA_WIN23.Worker", "ExamensArbete_BA_WIN23.Worker\ExamensArbete_BA_WIN23.Worker.csproj", "{3A5AAD2E-2E5D-4759-9182-52C8A8801B21}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExamensArbete_BA_WIN23.Worker", "ExamensArbete_BA_WIN23.Worker\ExamensArbete_BA_WIN23.Worker.csproj", "{3A5AAD2E-2E5D-4759-9182-52C8A8801B21}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

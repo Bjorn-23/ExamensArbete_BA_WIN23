@@ -8,14 +8,14 @@ public class DbSeed
 {
     private readonly ILogger<DbSeed> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ChangeRequestRepo _changeRequestRepo;
-    private readonly DateTimeProvider _dateTimeProvider;
+    private readonly IChangeRequestRepo _changeRequestRepo;
+    private readonly IDateTimeProvider _dateTimeProvider;
 
     public DbSeed(
         ILogger<DbSeed> logger,
         IUnitOfWork unitOfWork,
-        ChangeRequestRepo changeRequestRepo,
-        DateTimeProvider dateTimeProvider
+        IChangeRequestRepo changeRequestRepo,
+        IDateTimeProvider dateTimeProvider
         )
     {
         _logger = logger;
