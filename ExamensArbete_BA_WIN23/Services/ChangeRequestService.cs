@@ -1,4 +1,5 @@
-﻿using ExamensArbete_BA_WIN23.Business.Entities;
+﻿using ExamensArbete_BA_WIN23.API.Entities;
+using ExamensArbete_BA_WIN23.Business.Entities;
 using ExamensArbete_BA_WIN23.Persistence;
 using ExamensArbete_BA_WIN23.Repositories;
 using ExamensArbete_BA_WIN23.Utilities;
@@ -11,19 +12,22 @@ public class ChangeRequestService : IChangeRequestService
     private readonly ILogger<ChangeRequestService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IChangeRequestRepo _changeRequestRepo;
+    private readonly INotificationRepo _notificationRepo;
     private readonly IDateTimeProvider _dateTimeProvider;
 
     public ChangeRequestService(
         ILogger<ChangeRequestService> logger,
         IUnitOfWork unitOfWork,
         IChangeRequestRepo changeRequestRepo,
+        INotificationRepo notificationRepo,
         IDateTimeProvider dateTimeProvider
         )
     {
-        _dateTimeProvider = dateTimeProvider;
-        _changeRequestRepo = changeRequestRepo;
-        _unitOfWork = unitOfWork;
         _logger = logger;
+        _unitOfWork = unitOfWork;
+        _changeRequestRepo = changeRequestRepo;
+        _notificationRepo = notificationRepo;
+        _dateTimeProvider = dateTimeProvider;
     }
 
     public async Task<bool> Exists(Guid id, CancellationToken token)
@@ -55,19 +59,20 @@ public class ChangeRequestService : IChangeRequestService
                     .ToListAsync(ct);
         return result;
     }
-    public async Task<bool> Delete(Guid id, CancellationToken token)
+    public async Task<bool> Delete(Guid id, CancellationToken ct)
     {
-        var changeRequest = await _changeRequestRepo.Query().Where(x => x.ChangeRequestId == id).FirstOrDefaultAsync(token);
+        var changeRequest = await _changeRequestRepo.Query().Where(x => x.ChangeRequestId == id).FirstOrDefaultAsync(ct);
         if (changeRequest == null)
         {
             return false;
         }
 
         _changeRequestRepo.Delete(changeRequest);
+        await DeactivateNotification(changeRequest, ct);
+
         var result = await _unitOfWork.SaveChangesAsync();
         if (result == 1)
         {
-            await DeactivateNotification(changeRequest);
             return true;
         }
 
@@ -80,26 +85,52 @@ public class ChangeRequestService : IChangeRequestService
         {
             _changeRequestRepo.Delete(changeRequest);
             _logger.LogInformation("Queued ChangeRequestID: {ChangeRequestID} for deletion", changeRequest.ChangeRequestId);
-            await DeactivateNotification(changeRequest);
+            await DeactivateNotification(changeRequest, ct);
         }
 
         await _unitOfWork.SaveChangesAsync(ct);
         _logger.LogInformation("Succesfully deleted {Count} ChangeRequests", changeRequests.Count());
     }
 
-    public async Task NotifyRequestPendingDeletion(IEnumerable<ChangeRequest> changeRequests, CancellationToken ct)
+    public async Task NotifyRequestsPendingDeletion(IEnumerable<ChangeRequest> changeRequests, CancellationToken ct)
     {
         foreach (var changeRequest in changeRequests)
         {
-            // By using region and customer, get the relevant board members to notify about pending deletion.
-            // Create new notification with: region, customer, IEnumerable<Guid>, NotificationEnum.
-            // await _notificationRepo.SendNotification(changeRequest.Region, changeRequest.Customer, IEnumerable<Guid>, NotificationEnum, ct);
-            _logger.LogInformation("Board members of Customer: {Customer} in Region: {Region}, were sent notifications for ChangeRequestID: {ChangeRequestID}", changeRequest.Customer, changeRequest.Region, changeRequest.ChangeRequestId);
+            await NotifyRequestPendingDeletion(changeRequest, ct);
         }
+        await _unitOfWork.SaveChangesAsync(ct);
     }
 
-    public async Task DeactivateNotification(ChangeRequest changeRequest)
+    private async Task NotifyRequestPendingDeletion(ChangeRequest changeRequest, CancellationToken ct)
     {
+
+        if (await _notificationRepo.Exists(x => x.ChangeRequestId == changeRequest.ChangeRequestId && !x.isDeactivated, ct))
+        {
+            return;
+        }
+
+        var notification = new Notification()
+        {
+            Type = NotificationType.changeRequest,
+            ChangeRequestId = changeRequest.ChangeRequestId,
+            Created = _dateTimeProvider.UtcNow,
+            isDeactivated = false,
+            Message = $"You have an unhandled changeRequest: {changeRequest.ChangeRequestId}, if no action is taken it will be deleted.",
+        };
+
+        await _notificationRepo.AddAsync(notification, ct);
+        _logger.LogInformation("Board members of Customer: {Customer} in Region: {Region}, were sent notifications for ChangeRequestID: {ChangeRequestID}", changeRequest.Customer, changeRequest.Region, changeRequest.ChangeRequestId);
+    }
+
+    public async Task DeactivateNotification(ChangeRequest changeRequest, CancellationToken ct)
+    {
+        var notification = await _notificationRepo.Query().Where(x => x.ChangeRequestId == changeRequest.ChangeRequestId).FirstOrDefaultAsync(ct);
+        if (notification == null)
+        {
+            return;
+        }
+
+        _notificationRepo.Delete(notification);
         _logger.LogInformation("Deactivated notifications regarding ChangeRequestID: {ChangeRequestID} for board members of Customer: {Customer} in Region: {Region}", changeRequest.ChangeRequestId, changeRequest.Customer, changeRequest.Region);
     }
 }

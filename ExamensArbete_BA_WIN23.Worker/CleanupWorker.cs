@@ -67,7 +67,7 @@ public class CleanupWorker : IHostedService
             return;
         }
         
-        await changeRequestService.NotifyRequestPendingDeletion(changeRequests, ct);
+        await changeRequestService.NotifyRequestsPendingDeletion(changeRequests, ct);
     }
 
     public Task StopAsync(CancellationToken ct)

@@ -1,8 +1,10 @@
-﻿namespace ExamensArbete_BA_WIN23.Business.Entities;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ExamensArbete_BA_WIN23.Business.Entities;
 
 public class ChangeRequest
 {
-    public int Id { get; set; }
+    [Key]
     public Guid ChangeRequestId { get; set; }
     public DateTimeOffset Created { get; set; }
     public DateTimeOffset? Updated { get; set; }

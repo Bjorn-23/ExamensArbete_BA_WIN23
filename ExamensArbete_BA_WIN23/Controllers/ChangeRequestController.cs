@@ -50,7 +50,7 @@ namespace ExamensArbete_BA_WIN23.Controllers
             try
             {
                 var result = await _changeRequestService.Delete(id, token);
-                return result ? Ok(result) : BadRequest("Object could not be deleted");
+                return result ? Ok() : BadRequest("Object could not be deleted");
             }
             catch (Exception ex)
             {

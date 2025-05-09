@@ -1,3 +1,4 @@
+using ExamensArbete_BA_WIN23.API.Repositories;
 using ExamensArbete_BA_WIN23.Context;
 using ExamensArbete_BA_WIN23.Persistence;
 using ExamensArbete_BA_WIN23.Repositories;
@@ -16,6 +17,7 @@ builder.Services.AddDbContext<ApplicationContext>(x =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 builder.Services.AddScoped<IChangeRequestRepo, ChangeRequestRepo>();
+builder.Services.AddScoped<INotificationRepo, NotificationRepo>();
 builder.Services.AddScoped<IChangeRequestService, ChangeRequestService>();
 builder.Services.AddScoped<DbSeed>();
 

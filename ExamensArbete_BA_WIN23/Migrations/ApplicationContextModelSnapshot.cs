@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace ExamensArbete_BA_WIN23.Migrations
+namespace ExamensArbete_BA_WIN23.API.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
     partial class ApplicationContextModelSnapshot : ModelSnapshot
@@ -22,7 +22,7 @@ namespace ExamensArbete_BA_WIN23.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ExamensArbete_BA_WIN23.Business.Dtos.ChangeRequest", b =>
+            modelBuilder.Entity("ExamensArbete_BA_WIN23.API.Entities.Notification", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -31,6 +31,31 @@ namespace ExamensArbete_BA_WIN23.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<Guid>("ChangeRequestId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("isDeactivated")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChangeRequestId");
+
+                    b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("ExamensArbete_BA_WIN23.Business.Entities.ChangeRequest", b =>
+                {
+                    b.Property<Guid>("ChangeRequestId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("Created")
@@ -57,9 +82,20 @@ namespace ExamensArbete_BA_WIN23.Migrations
                     b.Property<bool>("isSignCompleted")
                         .HasColumnType("bit");
 
-                    b.HasKey("Id");
+                    b.HasKey("ChangeRequestId");
 
-                    b.ToTable("ChangeRequest");
+                    b.ToTable("ChangeRequests");
+                });
+
+            modelBuilder.Entity("ExamensArbete_BA_WIN23.API.Entities.Notification", b =>
+                {
+                    b.HasOne("ExamensArbete_BA_WIN23.Business.Entities.ChangeRequest", "ChangeRequest")
+                        .WithMany()
+                        .HasForeignKey("ChangeRequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ChangeRequest");
                 });
 #pragma warning restore 612, 618
         }
