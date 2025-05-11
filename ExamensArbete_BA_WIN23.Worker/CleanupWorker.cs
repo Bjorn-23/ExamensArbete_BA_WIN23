@@ -1,4 +1,4 @@
-using ExamensArbete_BA_WIN23.Services;
+using ExamensArbete_BA_WIN23.API.Services;
 
 namespace ExamensArbete_BA_WIN23.Worker;
 

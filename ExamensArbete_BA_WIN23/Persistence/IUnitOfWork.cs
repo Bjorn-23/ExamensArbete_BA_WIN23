@@ -1,4 +1,4 @@
-﻿namespace ExamensArbete_BA_WIN23.Persistence
+﻿namespace ExamensArbete_BA_WIN23.API.Persistence
 {
     public interface IUnitOfWork : IDisposable
     {

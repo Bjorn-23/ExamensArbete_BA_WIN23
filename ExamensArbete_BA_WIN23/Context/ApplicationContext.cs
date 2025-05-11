@@ -1,5 +1,4 @@
 ﻿using ExamensArbete_BA_WIN23.API.Entities;
-using ExamensArbete_BA_WIN23.Business.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExamensArbete_BA_WIN23.Context;

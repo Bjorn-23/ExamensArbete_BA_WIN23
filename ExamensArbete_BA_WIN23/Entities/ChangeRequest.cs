@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ExamensArbete_BA_WIN23.Business.Entities;
+namespace ExamensArbete_BA_WIN23.API.Entities;
 
 public class ChangeRequest
 {

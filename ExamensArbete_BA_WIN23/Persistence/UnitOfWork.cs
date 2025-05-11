@@ -1,8 +1,6 @@
 ﻿using ExamensArbete_BA_WIN23.Context;
-using ExamensArbete_BA_WIN23.Repositories;
-using Microsoft.EntityFrameworkCore;
 
-namespace ExamensArbete_BA_WIN23.Persistence;
+namespace ExamensArbete_BA_WIN23.API.Persistence;
 
 public class UnitOfWork : IUnitOfWork
 {

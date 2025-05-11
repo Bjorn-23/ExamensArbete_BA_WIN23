@@ -1,6 +1,5 @@
-using ExamensArbete_BA_WIN23.Services;
+using ExamensArbete_BA_WIN23.API.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 
 namespace ExamensArbete_BA_WIN23.Controllers
 {

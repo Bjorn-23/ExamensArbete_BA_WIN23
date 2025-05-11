@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace ExamensArbete_BA_WIN23.Repositories;
+namespace ExamensArbete_BA_WIN23.API.Repositories;
 public abstract partial class Repo<TContext, T> : IRepo<TContext, T> where TContext : DbContext where T :class
 {
     private readonly TContext _dbContext;

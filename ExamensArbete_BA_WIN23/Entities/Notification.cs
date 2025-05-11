@@ -1,5 +1,4 @@
-﻿using ExamensArbete_BA_WIN23.Business.Entities;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExamensArbete_BA_WIN23.API.Entities;

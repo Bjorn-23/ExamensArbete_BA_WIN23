@@ -1,6 +1,6 @@
-﻿using ExamensArbete_BA_WIN23.Business.Entities;
-using ExamensArbete_BA_WIN23.Persistence;
-using ExamensArbete_BA_WIN23.Repositories;
+﻿using ExamensArbete_BA_WIN23.API.Entities;
+using ExamensArbete_BA_WIN23.API.Persistence;
+using ExamensArbete_BA_WIN23.API.Repositories;
 using ExamensArbete_BA_WIN23.Utilities;
 
 namespace ExamensArbete_BA_WIN23.Worker;
