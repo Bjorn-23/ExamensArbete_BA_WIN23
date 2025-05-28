@@ -31,6 +31,7 @@ public class CleanupWorker : IHostedService
         try
         {
             // ---ONLY-FOR-DEMO-Purposes----
+            // NB change DB location according to your needs in appsettings file.
             await dbSeeder.RemoveSeed(ct);
             await dbSeeder.SeedAsync();
             // -----------------------------
